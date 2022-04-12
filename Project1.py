@@ -19,9 +19,9 @@ def isNumber(char)->bool:
     else:
         return False
     
-def isFloat(charList)->bool:
+def isFloat(number)->bool:
 
-    if charList[len(charList)-1] == "f" or charList[len(charList)-1] == "F":
+    if number[len(number)-1] == "f" or number[len(number)-1] == "F":
         return True
     else:
         return False
@@ -65,7 +65,7 @@ def addWholeAndDecimal(wholeNumber, decimalNumber):
             multiplier /= 10
             index += 1
 
-    return finalNumber
+    return finalNumber*1.0
         
 def exponentValue(floatValue, exponentNumber):
 
@@ -82,34 +82,24 @@ def exponentValue(floatValue, exponentNumber):
 
 
     if exponentValue == 0:
-        return floatValue
+        return floatValue*0.1
 
-    while exponentValue > 1:
+    while exponentValue > 0:
         floatValue *= 10
         exponentValue -= 1
 
 
-    return floatValue
+    return floatValue*0.1
 
 def main(number)->float:
-
-    charList = []
 
     wholeNumber = ""
     decimalNumber = ""
     exponentNumber = ""
 
-
-    for character in number:    
-        charList.append(character)
-
-    ## Check if it has an f or F in the back
-
-    if isFloat(charList):
+    if isFloat(number):
         
-        ## Check if the number is within the range of float
-
-        if isWithinFloatRange(charList):
+        if isWithinFloatRange(number):
 
             ## Retrieve Whole Number (and take out all the underscores)
 
@@ -117,23 +107,23 @@ def main(number)->float:
             loop = True
             wholeNumberOnly = False
             
-            while loop is True and index < len(charList):
+            while loop is True and index < len(number):
 
-                if charList[index] == ".":
+                if number[index] == ".":
                     loop = False
-                elif charList[index] == "e" or charList[index] == "E":
+                elif number[index] == "e" or number[index] == "E":
                     wholeNumberOnly = True
                     loop = False
-                elif charList[index] == "_":
-                    if index == 0 or index == len(charList)-1 or not isNumber(charList[index-1]) or not isNumber(charList[index+1]):
+                elif number[index] == "_":
+                    if index == 0 or index == len(number)-1 or not isNumber(number[index-1]) or not isNumber(number[index+1]):
                         return -1
-                elif index == len(charList)-1 and (charList[index] == "f" or charList[index] != "F"):
+                elif index == len(number)-1 and (number[index] == "f" or number[index] != "F"):
                     loop = False
                     return stringToNumber(wholeNumber)
-                elif not isNumber(charList[index]):
+                elif not isNumber(number[index]):
                     return -1   
                 else:
-                    wholeNumber += charList[index]
+                    wholeNumber += number[index]
                     
                 index+= 1
 
@@ -142,21 +132,21 @@ def main(number)->float:
             loop = True
 
             if wholeNumberOnly is False:
-                while loop is True and index < len(charList):
+                while loop is True and index < len(number):
                     
-                    if charList[index] == ".":
+                    if number[index] == ".":
                         return -1
-                    elif charList[index] == "e" or charList[index] == "E":
+                    elif number[index] == "e" or number[index] == "E":
                         loop = False
-                    elif charList[index] == "_":
-                        if index == len(charList)-1 or not isNumber(charList[index-1]) or not isNumber(charList[index+1]):
+                    elif number[index] == "_":
+                        if index == len(number)-1 or not isNumber(number[index-1]) or not isNumber(number[index+1]):
                             return -1
-                    elif index == len(charList)-1 and (charList[index] == "f" or charList[index] == "F"):
+                    elif index == len(number)-1 and (number[index] == "f" or number[index] == "F"):
                         return addWholeAndDecimal(wholeNumber, decimalNumber)
-                    elif not isNumber(charList[index]):
+                    elif not isNumber(number[index]):
                         return -1
                     else:
-                        decimalNumber += charList[index]
+                        decimalNumber += number[index]
                     index+=1
 
             floatValue = addWholeAndDecimal(wholeNumber, decimalNumber)
@@ -165,23 +155,27 @@ def main(number)->float:
 
             loop = True
 
-            while loop is True and index < len(charList):
-                if charList[index] == ".":
+            while loop is True and index < len(number):
+                if number[index] == ".":
                     return -1
-                elif charList[index] == "e" or charList[index] == "E":
+                elif number[index] == "e" or number[index] == "E":
                     return -1
-                elif charList[index] == "_":
-                    if index == len(charList)-1 or not isNumber(charList[index-1]) or not isNumber(charList[index+1]):
+                elif number[index] == "_":
+                    if index == len(number)-1 or not isNumber(number[index-1]) or not isNumber(number[index+1]):
                         return -1
-                elif index == len(charList)-1 and (charList[index] == "f" or charList[index] == "F"):
-                    return exponentValue(floatValue, exponentNumber)
+                elif index == len(number)-1 and (number[index] == "f" or number[index] == "F"):
+                    if exponentNumber == "":
+                        return -1
+                    else:
+                        return exponentValue(floatValue, exponentNumber)
                     
-                elif not isNumber(charList[index]):
+                elif not isNumber(number[index]):
                     return -1
                 else:
-                    exponentNumber += charList[index]
+                    exponentNumber += number[index]
                 index+=1
 
+    return -1
 
 if __name__ == "__main__": 
     while True:
