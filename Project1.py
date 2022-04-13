@@ -32,12 +32,12 @@ def isWithinFloatRange(number)->bool:
 def stringToNumber(stringNumber):
     finalNumber = 0
 
-    index = len(wholeNumber)-1
+    index = len(stringNumber)-1
 
     multiplier = 1
 
     while index >= 0:
-        finalNumber += StringToInt[wholeNumber[index]]*multiplier
+        finalNumber += StringToInt[stringNumber[index]]*multiplier
         multiplier *= 10
         index -= 1
         
@@ -183,6 +183,7 @@ if __name__ == "__main__":
         number = input()
         if number != "-1":
             result = main(number)
+            print(type(result))
             if result == -1:
                 print("Invalid Result")
             else:
