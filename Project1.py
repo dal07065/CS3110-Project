@@ -67,9 +67,7 @@ def addWholeAndDecimal(wholeNumber, decimalNumber):
 
     return finalNumber*1.0
         
-def exponentValue(floatValue, exponentNumber):
-
-    initialFloatValue = floatValue
+def exponentValue(floatValue, exponentNumber, exponentSign):
 
     index = len(exponentNumber)-1
     multiplier = 1
@@ -80,22 +78,28 @@ def exponentValue(floatValue, exponentNumber):
         multiplier *= 10
         index -= 1
 
-
     if exponentValue == 0:
         return floatValue*0.1
 
-    while exponentValue > 0:
-        floatValue *= 10
-        exponentValue -= 1
+    if exponentSign == "+":
+        while exponentValue > 0:
+            floatValue *= 10
+            exponentValue -= 1
+    elif exponentSign == "-":
+        while exponentValue > 0:
+            floatValue /= 10
+            exponentValue -= 1
+    else:
+        return -1
 
-
-    return floatValue*0.1
+    return floatValue
 
 def main(number)->float:
 
     wholeNumber = ""
     decimalNumber = ""
     exponentNumber = ""
+    floatValue = 0.0
 
     if isFloat(number):
         
@@ -149,13 +153,26 @@ def main(number)->float:
                         decimalNumber += number[index]
                     index+=1
 
-            floatValue = addWholeAndDecimal(wholeNumber, decimalNumber)
+                floatValue = addWholeAndDecimal(wholeNumber, decimalNumber)
+            else:
+                floatValue += stringToNumber(wholeNumber)
 
             ## Retrieve exponent number
 
             loop = True
+            exponentSign = "+"
+
+            if index < len(number):    
+                if number[index] == "-":
+                    exponentSign = "-"
+                    index+=1
+                elif number[index] == "+":
+                    index+=1
 
             while loop is True and index < len(number):
+
+                if number[index] =="-" or number[index] == "+":
+                    return -1
                 if number[index] == ".":
                     return -1
                 elif number[index] == "e" or number[index] == "E":
@@ -167,7 +184,7 @@ def main(number)->float:
                     if exponentNumber == "":
                         return -1
                     else:
-                        return exponentValue(floatValue, exponentNumber)
+                        return exponentValue(floatValue, exponentNumber, exponentSign)
                     
                 elif not isNumber(number[index]):
                     return -1
