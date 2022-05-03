@@ -5,8 +5,7 @@ import java.util.Stack;
 public class Calculator
 {
     private Project1 project1 = new Project1();
-    public float calculate(String expression)
-    {
+    public float calculate(String expression) throws Exception {
         Stack<ExpressionItem> postfix = new Stack<ExpressionItem>();
 
         postfix = InfixToPostfix(postfix, expression);
@@ -14,78 +13,7 @@ public class Calculator
         return evaluatePostfix(postfix);
     }
 
-    private float evaluatePostfix2(Stack<ExpressionItem> postfix) {
-        Stack<ExpressionItem> orderOfOperation = new Stack<>();
-
-        float finalValue = 0.0f;
-
-        ExpressionItem op1, op2;
-        ExpressionItem highest;
-
-        ExpressionItem top = postfix.pop();
-
-        while(true)
-        {
-            System.out.println("Postfix: " + postfix);
-            if(top instanceof Operator)
-            {
-                op2 = postfix.pop();
-                if(op2 instanceof Operand)
-                {
-                    op1 = postfix.pop();
-                    if(op1 instanceof Operand)
-                    {
-                        highest = top;
-                        finalValue = evaluate((Operator)highest, ((Operand) op1).getValue(), ((Operand) op2).getValue());
-                        orderOfOperation.push(new Operand(finalValue));
-                        if(!postfix.isEmpty())
-                            top = postfix.pop();
-                        else
-                            break;
-                    }
-                    else {
-
-                        orderOfOperation.push(top);
-                        orderOfOperation.push(op2);
-                        top = op1;
-                    }
-                }
-                else {
-                    orderOfOperation.push(top);
-                    top = op2;
-                }
-            }
-            else
-            {
-                orderOfOperation.push(top);
-                if(!postfix.isEmpty())
-                    top = postfix.pop();
-                else
-                    break;
-            }
-        }
-        //Add last operand in the postfix that was popped
-//        orderOfOperation.push(top);
-
-        while(!orderOfOperation.isEmpty())
-        {
-            top = orderOfOperation.pop();
-            if(top instanceof Operator)
-            {
-                finalValue += evaluate((Operator) top, ((Operand)orderOfOperation.pop()).getValue(), ((Operand)orderOfOperation.pop()).getValue());
-            }
-            else
-            {
-                Operand operand2 = (Operand) orderOfOperation.pop();
-                Operator operator = (Operator) orderOfOperation.pop();
-                finalValue += evaluate(operator, ((Operand)top).getValue(), operand2.getValue());
-            }
-        }
-        return finalValue;
-    }
-
-    private float evaluatePostfix(Stack<ExpressionItem> postfix)
-    {
+    private float evaluatePostfix(Stack<ExpressionItem> postfix) throws Exception {
         // postfix: [1.0 , 3.0 , 2.0 , * , + , 4.0 , 3.0 , 2.0 , - , * , - , 3.4 , - , 5.6 , + ]
 
         Stack<ExpressionItem> stack = new Stack<>();
@@ -110,7 +38,7 @@ public class Calculator
 
     }
 
-    private float evaluate(Operator highest, float op1, float op2) {
+    private float evaluate(Operator highest, float op1, float op2) throws Exception {
         switch(highest.getOperator())
         {
             case '+':
@@ -120,6 +48,9 @@ public class Calculator
             case '*':
                 return op1 * op2;
             case '/':
+                if(op2 == 0)
+                    throw new Exception("Division by zero error!");
+
                 return op1 / op2;
             default:
                 return -1;
@@ -149,7 +80,8 @@ public class Calculator
                     i++;
                 }
                 i--;
-                floatValue = project1.convertStringToFloat(tempFloatValue);
+                if(project1.convertStringToFloat(tempFloatValue))
+                    floatValue = project1.getResult();
                 tempFloatValue = "";
                 postfix.push(new Operand(floatValue));
             }

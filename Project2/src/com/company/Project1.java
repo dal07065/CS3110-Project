@@ -1,13 +1,16 @@
 package com.company;
-
-import static com.company.Calculator.isNumber;
-
 public class Project1 {
-    public float convertStringToFloat(String tempFloatValue) {
+
+    private float result = -1f;
+
+    public float getResult() {return result;}
+    public boolean convertStringToFloat(String tempFloatValue) {
+
+        tempFloatValue = trimExpression(tempFloatValue);
+
         String wholeNumber = "";
         String decimalNumber = "";
         String exponentNumber = "";
-        float floatValue = 0.0f;
 
         if(isFloat(tempFloatValue))
         {
@@ -31,17 +34,18 @@ public class Project1 {
                                 index == tempFloatValue.length() - 1 ||
                                 !isNumber(tempFloatValue.charAt(index - 1)) ||
                                 !isNumber(tempFloatValue.charAt(index + 1)))
-                            return -1f;
+                            return false;
                         break;
                     case 'f', 'F':
                         if (index == tempFloatValue.length() - 1) {
+                            wholeNumberOnly = true;
                             loop = false;
                             break;
                         } else
-                            return -1f;
+                            return false;
                     default:
                         if (!isNumber(tempFloatValue.charAt(index)))
-                            return -1f;
+                            return false;
                         else
                             wholeNumber += tempFloatValue.charAt(index);
                         break;
@@ -57,7 +61,7 @@ public class Project1 {
                     switch(tempFloatValue.charAt(index))
                     {
                         case '.':
-                            return -1f;
+                            return false;
                         case 'e', 'E':
                             loop = false;
                             exponent = true;
@@ -66,28 +70,37 @@ public class Project1 {
                             if(index == tempFloatValue.length()-1 ||
                                     !isNumber(tempFloatValue.charAt(index-1)) ||
                                     !isNumber(tempFloatValue.charAt(index+1)))
-                                return -1f;
+                                return false;
                             break;
                         case 'f', 'F':
                             if(index == tempFloatValue.length()-1)
                             {
-                                return stringToNumber(wholeNumber, decimalNumber);
+                                if(decimalNumber != "")
+                                {
+                                    result = stringToNumber(wholeNumber, decimalNumber);
+                                    return true;
+                                }
+                                return false;
+
                             }
                             else
-                                return -1;
+                                return false;
                         default:
                             if(!isNumber(tempFloatValue.charAt(index)))
-                                return -1;
+                                return false;
                             else
                                 decimalNumber += tempFloatValue.charAt(index);
                             break;
                     }
                     index += 1;
                 }
-                floatValue = stringToNumber(wholeNumber, decimalNumber);
+                if(decimalNumber != "")
+                    result = stringToNumber(wholeNumber, decimalNumber);
+                else
+                    return false;
             }
             else
-                floatValue += stringToNumber(wholeNumber, null);
+                result = stringToNumber(wholeNumber, null);
 
             if(exponent == true)
             {
@@ -104,38 +117,60 @@ public class Project1 {
                     else if (tempFloatValue.charAt(index) == '+')
                         index++;
                 }
+                else
+                    return false;
 
                 while(loop && index < tempFloatValue.length())
                 {
                     switch(tempFloatValue.charAt(index))
                     {
                         case '-', '+', '.', 'e', 'E':
-                            return -1;
+                            return false;
                         case '_':
                             if(index == tempFloatValue.length()-1 ||
                                     !isNumber(tempFloatValue.charAt(index-1)) ||
                                     !isNumber(tempFloatValue.charAt(index+1)))
-                                return -1;
+                                return false;
                         case 'f', 'F':
                             if(index == tempFloatValue.length()-1)
                                 if(exponentNumber=="")
-                                    return -1;
+                                    return false;
                             break;
                         default:
                             if(!isNumber(tempFloatValue.charAt(index)))
-                                return -1;
+                                return false;
                             else
                                 exponentNumber += tempFloatValue.charAt(index);
 
                     }
                     index++;
                 }
-
-                floatValue = exponentValue(floatValue, exponentNumber, exponentSign);
+                if(exponentNumber == "")
+                    return false;
+                result = exponentValue(result, exponentNumber, exponentSign);
             }
-            return floatValue;
+            return true;
         }
-        return -1f;
+        return false;
+    }
+
+    private boolean isNumber(char charAt) {
+        if(charAt >=48 && charAt <= 57 || charAt == '_')
+            return true;
+        return false;
+    }
+
+    private String trimExpression(String expression) {
+
+        String newExpression = "";
+
+        for(int i = 0; i < expression.length(); i++)
+        {
+            if(expression.charAt(i) != ' ')
+                newExpression += expression.charAt(i);
+        }
+
+        return newExpression;
     }
 
     private float exponentValue(float floatValue, String exponentNumber, char exponentSign) {
@@ -144,7 +179,7 @@ public class Project1 {
         float exponentValue = stringToNumber(exponentNumber, null);
 
         if(exponentValue == 0.0f)
-            return floatValue/10;
+            return floatValue;
         else if( exponentSign == '+')
             while(exponentValue > 0)
             {
